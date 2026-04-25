@@ -1,6 +1,28 @@
 package entities;
+import weapons.Weapon;
 
 public abstract class Combatant extends Entity {
-    // TODO
-    // This exists because we only want players and enemies to have weapons.
+    private Weapon wep;
+    private int hp;
+    
+    public Combatant(String s, Weapon w, int hp){
+        super(s);
+        this.wep = w;
+        this.hp = hp;
+    }
+
+    public abstract void move(int x, int y);
+    
+    public int getHp(){
+        return hp;
+    }
+    
+    public void setHp(int hp){
+        this.hp = hp;
+    }
+
+    public void getWeapon(){
+        return wep;
+    }
+
 }
