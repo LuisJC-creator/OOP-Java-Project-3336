@@ -10,8 +10,6 @@ public abstract class Combatant extends Entity {
         this.wep = w;
         this.hp = hp;
     }
-
-    public abstract void move(int x, int y);
     
     public int getHp(){
         return hp;
@@ -21,7 +19,7 @@ public abstract class Combatant extends Entity {
         this.hp = hp;
     }
 
-    public void getWeapon(){
+    public Weapon getWeapon(){
         return wep;
     }
 
