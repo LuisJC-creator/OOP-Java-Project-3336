@@ -1,4 +1,5 @@
 package entities;
+import weapons.Weapon;
 
 public class Enemy extends Combatant {
     private String type;

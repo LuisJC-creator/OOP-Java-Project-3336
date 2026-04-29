@@ -1,5 +1,6 @@
 import java.util.*;
 import entities.*;
+import entities.items.*;
 import weapons.*;
 
 

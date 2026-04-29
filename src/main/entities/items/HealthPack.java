@@ -1,5 +1,6 @@
 package entities.items;
 
+import entities.Item;
 import entities.Combatant;
 
 public class HealthPack extends Item {
