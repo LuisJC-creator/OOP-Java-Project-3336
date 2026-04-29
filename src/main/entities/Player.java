@@ -13,4 +13,9 @@ public class Player extends Combatant {
         // TODO: display action menu, wait for player input
         // options: move, attack.
     }
+
+    public boolean isDead(){
+        if(this.getHp() <= 0) { return true; }
+        else { return false; }
+    }
 }

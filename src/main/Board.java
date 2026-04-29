@@ -24,15 +24,16 @@ public class Board {
 
 
     // so game can call this on initialization, easy peasy.
-    public void placeEntity(Entity e, int x, int y){
+    public boolean placeEntity(Entity e, int x, int y){
         if(!isOccupied(x, y) && isValidPosition(x, y)){
             board[x][y] = e;
             Point temp = new Point(x,y); // this kind of sucks maybe I can streamline this. but might be more lines to do this.
             entityPos.put(e, temp);
+            return true;
         }
         else {
             // send some signal to game to pick a different spot?
-            return;
+            return false;
         }
     }
 
@@ -57,7 +58,7 @@ public class Board {
     }
 
     // check if position is within board bounds.
-    public boolean isValidPosition(int x, int y){
+    private boolean isValidPosition(int x, int y){
         if(x > this.x - 1 || y > this.y - 1) return false;
         else if(x < 0 || y < 0) return false;
         else return true;
