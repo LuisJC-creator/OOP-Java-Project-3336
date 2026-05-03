@@ -3,9 +3,7 @@ import entities.*;
 import entities.items.*;
 import weapons.*;
 import action.Action;
-
 import java.awt.Point;
-
 
 public class Game {
     // IN PROGRESS
