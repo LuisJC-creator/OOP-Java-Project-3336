@@ -86,6 +86,6 @@ public class Board {
         return board[x][y];
     }
 
-    public int getRow() { return x; }
-    public int getCol() { return y; }
+    public int getRows() { return x; }
+    public int getCols() { return y; }
 }

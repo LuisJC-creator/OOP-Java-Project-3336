@@ -14,6 +14,7 @@ public class Game {
     private boolean gameOver;
     private Random rand;
     private int boardSize = 25;
+    private ArrayList<String> combatLog = new ArrayList<>();
 
     public Game(){
         this.board = null;
@@ -109,17 +110,94 @@ public class Game {
         //     checkWinLose();
     }
 
-    public void executeGuiTurn(int dx, int dy) {
+    // public void executeGuiTurn(int dx, int dy) {
+    //     if (gameOver) return;
+    //
+    //     Point p = board.getPosition(player);
+    //     if (p == null) return;
+    //
+    //     int newX = p.x + dx;
+    //     int newY = p.y + dy;
+    //
+    //     Entity targetTile = board.getEntityAt(newX, newY);
+    //     boolean actionTaken = false;
+    //
+    //     if (targetTile instanceof Enemy) {
+    //         Enemy targetEnemy = (Enemy) targetTile;
+    //         System.out.println("You attacked the " + targetEnemy.getClass().getSimpleName() + "!");
+    //         attack(player, targetEnemy);
+    //         actionTaken = true;
+    //     }
+    //     else {
+    //         if (board.moveEntity(player, newX, newY)) { actionTaken = true; }
+    //     }
+    //
+    //     if (actionTaken) {
+    //         for (Enemy e : enemies) {
+    //             if (!e.isDead()) {
+    //                 enemyTurn(e);
+    //             }
+    //         }
+    //         checkWinLose();
+    //     }
+    //  }
+    
+    private int calculateDistance(Point p1, Point p2) {
+        return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
+    }
+
+    public void executeMouseAction(int targetR, int targetC, boolean isAttackMode) {
         if (gameOver) return;
 
         Point p = board.getPosition(player);
         if (p == null) return;
 
-        int newX = p.x + dx;
-        int newY = p.y + dy;
+        boolean actionTaken = false;
+        Point targetPoint = new Point(targetR, targetC);
+        int distance = calculateDistance(p, targetPoint);
 
-        if (board.moveEntity(player, newX, newY)) {
-            for (Enemy e : enemies) {
+        if (isAttackMode) {
+            // ATTACK LOGIC
+            Entity targetEntity = board.getEntityAt(targetR, targetC);
+
+            if (targetEntity instanceof Enemy) {
+                if (distance <= player.getWeapon().getRange()) {
+                    attack(player, (Combatant) targetEntity);
+                    actionTaken = true;
+                }
+                else {
+                    addLogMessage("Target is too far away! (Range: " + player.getWeapon().getRange() + ")");
+                }
+            }
+            else {
+                addLogMessage("There is no enemy there to attack.");
+            }
+        }
+        else {
+            // move logic
+            if (distance == 1) {
+                Entity targetEntity = board.getEntityAt(targetR, targetC);
+
+                if (targetEntity instanceof Enemy) {
+                    addLogMessage("Tile blocked! Attack to strike the enemy!");
+                    // player should not move into the enemies tile and vice versa
+                }
+                else {
+                    if (board.moveEntity(player, targetR, targetC)) {
+                        actionTaken = true;
+                    }
+                }
+            }
+            else if (distance == 0) {
+                addLogMessage("You are already standing there.");
+            }
+            else {
+                addLogMessage("You can only move one space.");
+            }
+        }
+
+        if (actionTaken) {
+            for(Enemy e : enemies) {
                 if (!e.isDead()) {
                     enemyTurn(e);
                 }
@@ -196,8 +274,19 @@ public class Game {
     private void attack(Combatant attacker, Combatant target){
         int damage = attacker.getWeapon().getDmg();
         target.setHp(target.getHp() - damage);
+
+        addLogMessage(attacker.getClass().getSimpleName() + " hits for " + damage + " dmg!");
+
         if(target.isDead()){
+            addLogMessage(target.getClass().getSimpleName() + " was defeated!");
             board.removeEntity(target);
+        }
+    }
+
+    public void addLogMessage(String msg) {
+        combatLog.add(msg);
+        if (combatLog.size() > 15) {
+            combatLog.remove(0);
         }
     }
  
@@ -209,4 +298,6 @@ public class Game {
     // getters
     public Board getBoard() { return this.board; }
     public boolean isGameOver() { return this.gameOver; }
+    public ArrayList<String> getCombatLog() { return combatLog; }
+    public Player getPlayer() { return player; }
 }
