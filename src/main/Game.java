@@ -101,17 +101,33 @@ public class Game {
 
 
         // MAIN GAME LOOP
-        while(!gameOver){
-            playerTurn(); // always start with the player's turn.
-            for(Enemy e : enemies){
-                if(!e.isDead()){
+        // while(!gameOver){
+        //     playerTurn(); // always start with the player's turn.
+        //     for(Enemy e : enemies){
+        //         if(!e.isDead()){
+        //             enemyTurn(e);
+        //         }
+        //     }
+        //     checkWinLose();
+    }
+
+    public void executeGuiTurn(int dx, int dy) {
+        if (gameOver) return;
+
+        Point p = board.getPosition(player);
+        if (p == null) return;
+
+        int newX = p.x + dx;
+        int newY = p.y + dy;
+
+        if (board.moveEntity(player, newX, newY)) {
+            for (Enemy e : enemies) {
+                if (!e.isDead()) {
                     enemyTurn(e);
                 }
             }
             checkWinLose();
         }
-
-
     }
 
     //random gen
@@ -186,11 +202,13 @@ public class Game {
             board.removeEntity(target);
         }
     }
-
-    
-    
+ 
     public static void main(String[] args){
-        Game game = new Game();
-        game.start();
+        // Game game = new Game();
+        // game.start();
     }
+
+    // getters
+    public Board getBoard() { return this.board; }
+    public boolean isGameOver() { return this.gameOver; }
 }

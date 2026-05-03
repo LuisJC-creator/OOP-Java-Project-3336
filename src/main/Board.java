@@ -85,4 +85,7 @@ public class Board {
     public Entity getEntityAt(int x, int y){
         return board[x][y];
     }
+
+    public int getRow() { return x; }
+    public int getCol() { return y; }
 }
