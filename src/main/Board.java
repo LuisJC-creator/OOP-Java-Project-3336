@@ -38,10 +38,10 @@ public class Board {
     }
 
     // for turn moves
-    public void moveEntity(Entity e, int x, int y){
+    public boolean moveEntity(Entity e, int x, int y){
         // just in case is called on a nonexistent entity also check if valid, add error handling at some point.
-        if(!entityPos.containsKey(e)) return;
-        if(!isValidPosition(x, y)) return;
+        if(!entityPos.containsKey(e)) return false;
+        if(!isValidPosition(x, y)) return false;
 
         // find entity's current pos.
         Point curr = entityPos.get(e);
@@ -55,6 +55,8 @@ public class Board {
 
         // move it to x, y.
         board[temp.x][temp.y] = e;
+
+        return true;
     }
 
     // check if position is within board bounds.
@@ -68,5 +70,19 @@ public class Board {
     private boolean isOccupied(int x, int y){
         if(board[x][y] == null) return false;
         else return true;
+    }
+
+    public Point getPosition(Entity e){
+        return entityPos.get(e);
+    }
+
+    public void removeEntity(Entity e){
+        Point temp = entityPos.get(e);
+        board[temp.x][temp.y] = null;
+        entityPos.remove(e);
+    }
+
+    public Entity getEntityAt(int x, int y){
+        return board[x][y];
     }
 }

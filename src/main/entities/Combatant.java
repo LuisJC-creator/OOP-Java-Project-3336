@@ -23,4 +23,8 @@ public abstract class Combatant extends Entity {
         return wep;
     }
 
+    public boolean isDead(){
+        return (this.getHp() <= 0);
+    }
+
 }

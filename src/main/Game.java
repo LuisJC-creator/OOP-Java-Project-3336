@@ -2,6 +2,9 @@ import java.util.*;
 import entities.*;
 import entities.items.*;
 import weapons.*;
+import action.Action;
+
+import java.awt.Point;
 
 
 public class Game {
@@ -9,9 +12,10 @@ public class Game {
     private Board board;
     private Player player;
     private ArrayList<Enemy> enemies; // probably arraylist later.
-    private ArrayList<Item> items;
+    private ArrayList<Item> items; // TODO: dynamically update this to remove items when they get removed off board (NOT URGENT)
     private boolean gameOver;
     private Random rand;
+    private int boardSize = 25;
 
     public Game(){
         this.board = null;
@@ -24,13 +28,14 @@ public class Game {
 
     public void start(){
         // TODO: main menu, call startGame() or quit
+        // main menu
+        startGame();
+        // quit
     }
 
     // startGame(): place entities on board, run game loop
     public void startGame(){
-        
-        // constant board size.
-        int boardSize = 25;
+
 
         Weapon sword = new Weapon("sword", 1, 20);
         Weapon bow = new Weapon("bow", 3, 10);
@@ -54,8 +59,11 @@ public class Game {
         }
 
         // health pack test
-        HealthPack pack1 = new HealthPack("health");
-        items.add(pack1);
+        int testVal = 5;
+        for(int i = 0; i < testVal; i++){
+            HealthPack temp = new HealthPack("health");
+            items.add(temp);
+        }
 
         // make placing a functin probably.
         
@@ -92,18 +100,97 @@ public class Game {
         } while(!this.board.placeEntity(player, x ,y));
 
 
+        // MAIN GAME LOOP
+        while(!gameOver){
+            playerTurn(); // always start with the player's turn.
+            for(Enemy e : enemies){
+                if(!e.isDead()){
+                    enemyTurn(e);
+                }
+            }
+            checkWinLose();
+        }
+
+
     }
-    // TODO: playerturn(): player pickAction() and resolve choice
-    // TODO: enemyTurn(): handle automatic enemy movements
-    // TODO: handle attacking (within turn most likely.)
-    // TODO: some logic for checking if the player has won or lost.
 
     //random gen
     private int randBoardNum(int boardSize){
     return rand.nextInt(boardSize); 
     }
+
+    // checks if all enemies are dead
+    private boolean enemiesDead(){
+        for(Enemy e : enemies){
+            if(!e.isDead()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // call to see if the game is over
+    private void checkWinLose(){
+        if(this.player.isDead() || enemiesDead()) {gameOver = true;}
+        else { return; }
+    }
+
+    private void playerTurn(){
+         // use getEntityAt() for player logic, if player lands on healthpack, heal them by the healhpack value
+        // do things based on what this returns.
+        Action action = player.pickAction();
+
+        if(action == Action.MOVE){
+            // TODO: frontend provides direction (up/down/left/right) <- Aron
+            // translate to dx/dy and call board.moveEntity(player, newX, newY) <- Luis or Aron whoever wants to do it.
+            // then check getEntityAt() for item interaction
+        }
+        else if(action == Action.ATTACK){
+            // TODO: frontend provides target Entity or target coordinates
+            // check distance <= this.player.getWeapon().getRange()
+            // if valid, call attack(player, target)
+        }      
+
+    }
+
+    private void enemyTurn(Enemy e){
+        
+        // movement logic, won't move unless player isn't nearby. distance calculations
+        Point enemyPos = board.getPosition(e);
+        Point playerPos = board.getPosition(player);
+
+        int dx = Integer.signum(playerPos.x - enemyPos.x);
+        int dy = Integer.signum(playerPos.y - enemyPos.y);
+
+        Entity targetTile = board.getEntityAt(enemyPos.x + dx, enemyPos.y + dy);
+            if(targetTile instanceof Item){
+                board.removeEntity(targetTile); 
+            }
+
+        board.moveEntity(e, enemyPos.x + dx, enemyPos.y + dy);
+        enemyPos = board.getPosition(e); // update the position.
+
+        // check to attack
+        int distance = Math.abs(playerPos.x - enemyPos.x) + Math.abs(playerPos.y - enemyPos.y);
+        
+        if(distance <= e.getWeapon().getRange()){
+            attack(e, this.player);
+        }
+
+    }
+
+    private void attack(Combatant attacker, Combatant target){
+        int damage = attacker.getWeapon().getDmg();
+        target.setHp(target.getHp() - damage);
+        if(target.isDead()){
+            board.removeEntity(target);
+        }
+    }
+
+    
     
     public static void main(String[] args){
-        
+        Game game = new Game();
+        game.start();
     }
 }
