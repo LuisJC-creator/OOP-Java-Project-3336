@@ -53,7 +53,7 @@ public class Game {
         String[] types = {"Gobin", "Orc", "Elf"};
         Weapon[] wepList = {sword, bow, spear};
         for(int idx = 0; idx < 3; idx++){
-            Enemy temp = new Enemy(names[idx], wepList[idx], 150/(idx+1), types[idx]);
+            Enemy temp = new Enemy(names[idx], wepList[idx], 50/(idx+1), types[idx]);
             enemies.add(temp);
         }
 
@@ -97,51 +97,8 @@ public class Game {
             x = randBoardNum(boardSize);
             y = randBoardNum(boardSize);
         } while(!this.board.placeEntity(player, x ,y));
-
-
-        // MAIN GAME LOOP
-        // while(!gameOver){
-        //     playerTurn(); // always start with the player's turn.
-        //     for(Enemy e : enemies){
-        //         if(!e.isDead()){
-        //             enemyTurn(e);
-        //         }
-        //     }
-        //     checkWinLose();
     }
 
-    // public void executeGuiTurn(int dx, int dy) {
-    //     if (gameOver) return;
-    //
-    //     Point p = board.getPosition(player);
-    //     if (p == null) return;
-    //
-    //     int newX = p.x + dx;
-    //     int newY = p.y + dy;
-    //
-    //     Entity targetTile = board.getEntityAt(newX, newY);
-    //     boolean actionTaken = false;
-    //
-    //     if (targetTile instanceof Enemy) {
-    //         Enemy targetEnemy = (Enemy) targetTile;
-    //         System.out.println("You attacked the " + targetEnemy.getClass().getSimpleName() + "!");
-    //         attack(player, targetEnemy);
-    //         actionTaken = true;
-    //     }
-    //     else {
-    //         if (board.moveEntity(player, newX, newY)) { actionTaken = true; }
-    //     }
-    //
-    //     if (actionTaken) {
-    //         for (Enemy e : enemies) {
-    //             if (!e.isDead()) {
-    //                 enemyTurn(e);
-    //             }
-    //         }
-    //         checkWinLose();
-    //     }
-    //  }
-    
     private int calculateDistance(Point p1, Point p2) {
         return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
     }
@@ -183,6 +140,15 @@ public class Game {
                     // player should not move into the enemies tile and vice versa
                 }
                 else {
+                    if (targetEntity instanceof Item) {
+                        int healAmount = 15;
+                        int oldHp = player.getHp();
+
+                        player.setHp(Math.min(100, oldHp + healAmount));
+                        addLogMessage("Picked up an item! Healed for " + healAmount + " hp!");
+
+                        board.removeEntity(targetEntity);
+                    }
                     if (board.moveEntity(player, targetR, targetC)) {
                         actionTaken = true;
                     }
@@ -301,3 +267,51 @@ public class Game {
     public ArrayList<String> getCombatLog() { return combatLog; }
     public Player getPlayer() { return player; }
 }
+
+
+
+
+
+
+// DEFUNCT CODE
+// public void executeGuiTurn(int dx, int dy) {
+    //     if (gameOver) return;
+    //
+    //     Point p = board.getPosition(player);
+    //     if (p == null) return;
+    //
+    //     int newX = p.x + dx;
+    //     int newY = p.y + dy;
+    //
+    //     Entity targetTile = board.getEntityAt(newX, newY);
+    //     boolean actionTaken = false;
+    //
+    //     if (targetTile instanceof Enemy) {
+    //         Enemy targetEnemy = (Enemy) targetTile;
+    //         System.out.println("You attacked the " + targetEnemy.getClass().getSimpleName() + "!");
+    //         attack(player, targetEnemy);
+    //         actionTaken = true;
+    //     }
+    //     else {
+    //         if (board.moveEntity(player, newX, newY)) { actionTaken = true; }
+    //     }
+    //
+    //     if (actionTaken) {
+    //         for (Enemy e : enemies) {
+    //             if (!e.isDead()) {
+    //                 enemyTurn(e);
+    //             }
+    //         }
+    //         checkWinLose();
+    //     }
+    //  }
+    //     MAIN GAME LOOP
+        // while(!gameOver){
+        //     playerTurn(); // always start with the player's turn.
+        //     for(Enemy e : enemies){
+        //         if(!e.isDead()){
+        //             enemyTurn(e);
+        //         }
+        //     }
+        //     checkWinLose();
+
